@@ -1,0 +1,26 @@
+match(EmailSource)
+DETACH DELETE EmailSource;
+
+
+LOAD CSV FROM "file:///email-sourceIDs.txt" AS line 
+create (aNode:EmailSource  { sourceNode: toInteger(line[0])})
+
+LOAD CSV FROM "file:///email-edges.txt" AS line FIELDTERMINATOR ','
+MATCH (es1:EmailSource { sourceNode: toInteger(line[0])})
+MATCH (es2:EmailSource { sourceNode: toInteger(line[1])})
+merge (es1)-[:SentTo]->(es2)
+
+LOAD CSV FROM "file:///email-edges-subset.txt" AS line FIELDTERMINATOR ','
+MATCH (es1:EmailSource { sourceNode: toInteger(line[0])})
+MATCH (es2:EmailSource { sourceNode: toInteger(line[1])})
+merge (es1)-[:SentTo]->(es2)
+
+
+
+
+
+match (es:EmailSource) where es.sourceNode < 20 return es
+
+match (es:EmailSource) where es.sourceNode >= 700 return es
+
+
